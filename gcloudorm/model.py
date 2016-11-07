@@ -18,7 +18,7 @@ class Model(entity.Entity):
     _model_exclude_from_indexes = None
 
     def __init__(self, id=None, parent=None, **kwargs):
-        super(Model, self).__init__(exclude_from_indexes=self._model_exclude_from_indexes)
+        super(Model, self).__init__(exclude_from_indexes=tuple(self._model_exclude_from_indexes))
 
         if isinstance(parent, key.Key):
             flat = []
@@ -35,7 +35,7 @@ class Model(entity.Entity):
             if id is None:
                 self._key = key.Key(self.__class__.__name__)
             elif isinstance(id, (int, long, basestring)):
-                self._key = key.Key(self.__class__.__name__, id)
+                self._key = key.Key(self.__class__.__name__, id, project='gothic-province-823')
             else:
                 raise SyntaxError()
 
@@ -123,7 +123,7 @@ class Model(entity.Entity):
         if batch:
             return batch.put(self)
         else:
-            return datastore.put([self])
+            return datastore.batch.Batch([self])
 
 
 def get_multi(keys):
