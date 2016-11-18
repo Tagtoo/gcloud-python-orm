@@ -79,7 +79,7 @@ class Model(entity.Entity):
         if self._key:
             return "<%s%s %s>" % (
                 self.__class__.__name__,
-                self._key.path(),
+                self._key.path,
                 super(Model, self).__repr__()
             )
         else:
