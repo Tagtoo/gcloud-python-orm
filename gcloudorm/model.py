@@ -12,6 +12,7 @@ class MetaModel(type):
 
 
 class Model(entity.Entity):
+    _datastore_client = datastore.Client()
     __metaclass__ = MetaModel
 
     # name, prop dict
@@ -119,14 +120,13 @@ class Model(entity.Entity):
 
         return results
 
-    def put(self, batch=None):
+    def put(self):
         for name, prop in self._properties.items():
             prop._prepare_for_put(self)
+        self._datastore_client.put(self)
 
-        if batch:
-            return batch.put(self)
-        else:
-            return datastore.batch.Batch([self])
+    def delete(self):
+        self._datastore_client.delete(self.key)
 
 
 def get_multi(keys):
