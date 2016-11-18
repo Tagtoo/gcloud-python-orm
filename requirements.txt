@@ -1,4 +1,7 @@
+# For prodcution
 gcloud==0.18.3
+
+# For testings
 unittest2
 coverage
 nose

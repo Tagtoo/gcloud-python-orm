@@ -12,18 +12,20 @@ with open(os.path.join(here, 'README.md')) as f:
 
 
 REQUIREMENTS = [
-    'gcloud==0.4.1',
+    'gcloud==0.18.3',
 ]
 
 setup(
     name='gcloudorm',
-    version='0.4.1',
+    version='0.18.3',
     description='ORM for Google Cloud',
     author='lucemia',
     author_email='lucemia@gmail.com',
+    maintainer='Frank Jheng',
+    maintainer_email='shunyi@tagtoo.org',
     long_description=README,
     scripts=[],
-    url='https://github.com/lucemia/gcloud-python-orm',
+    url='https://github.com/Tagtoo/gcloud-python-orm',
     packages=find_packages(),
     license='Apache 2.0',
     platforms='Posix; MacOS X; Windows',
