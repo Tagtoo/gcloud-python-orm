@@ -1,6 +1,9 @@
 from gcloud import datastore
 from gcloud.datastore import entity, key
+
+# Must use import *, for ndb_models.py to use different properties.
 from .property import *
+
 
 class MetaModel(type):
     def __init__(cls, name, bases, classdict):
@@ -48,10 +51,10 @@ class Model(entity.Entity):
     @property
     def key(self):
         return self._key
+
     @key.setter
     def key(self, value):
         self._key = value
-
 
     @classmethod
     def _fix_up_properties(cls):
@@ -63,7 +66,7 @@ class Model(entity.Entity):
             if isinstance(attr, Property):
                 attr._fix_up(cls, name)
                 cls._properties[attr._name] = attr
-                if attr._indexed == False:
+                if attr._indexed is False:
                     cls._model_exclude_from_indexes.add(attr._name)
 
         cls._kind_map[cls.__name__] = cls
@@ -108,11 +111,11 @@ class Model(entity.Entity):
         entities = datastore.get([key.Key(cls.__name__, id) for id in ids])
         results = []
 
-        for entity in entities:
-            if entity is None:
+        for _entity in entities:
+            if _entity is None:
                 results.append(None)
             else:
-                results.append(cls.from_entity(entity))
+                results.append(cls.from_entity(_entity))
 
         return results
 
@@ -130,13 +133,13 @@ def get_multi(keys):
     entities = datastore.get(keys)
 
     results = []
-    for entity in entities:
-        if entity is None:
+    for _entity in entities:
+        if _entity is None:
             results.append(None)
 
-        kind = entity.key().kind()
+        kind = _entity.key().kind()
 
         model = Model._lookup_model(kind)
-        results.append(model.from_entity(entity))
+        results.append(model.from_entity(_entity))
 
     return results

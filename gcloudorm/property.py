@@ -1,10 +1,11 @@
 import zlib
 import cPickle as pickle
-try:
-  import json
-except ImportError:
-  import simplejson as json
 import datetime
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
 
 class Property(object):
     def __init__(self, name=None, indexed=True, repeated=False, required=False, default=None, choices=None, validator=None):
@@ -18,12 +19,12 @@ class Property(object):
 
     def __get__(self, instance, owner):
         if self._repeated:
-            if not self._name in instance:
+            if self._name not in instance:
                 self.__set__(instance, self._default or [])
 
             return [self.from_base_type(k) for k in instance[self._name]]
 
-        if not self._name in instance:
+        if self._name not in instance:
             self.__set__(instance, self._default)
 
         return self.from_base_type(instance[self._name])
@@ -46,11 +47,12 @@ class Property(object):
 
     def validate(self, value):
         assert self._choices is None or value in self._choices
-        assert not (self._required and not value is None)
-        if value is None: return
+        assert not (self._required and value is not None)
+        if value is None:
+            return
 
-        v = self._validate(value)
-        if not self._validator is None:
+        self._validate(value)
+        if self._validator is not None:
             return self._validator(self, value)
 
         return value
@@ -84,20 +86,24 @@ class Property(object):
     def _from_db_value(self, value):
         return value
 
+
 class BooleanProperty(Property):
     def _validate(self, value):
         assert isinstance(value, bool)
         return value
+
 
 class IntegerProperty(Property):
     def _validate(self, value):
         assert isinstance(value, (int, long))
         return int(value)
 
+
 class FloatProperty(Property):
     def _validate(self, value):
         assert isinstance(value, (int, long, float))
         return float(value)
+
 
 class BlobProperty(Property):
     def __init__(self, name=None, compressed=False, **kwargs):
@@ -122,6 +128,7 @@ class BlobProperty(Property):
             return zlib.decompress(value.z_val)
 
         return value
+
 
 class TextProperty(BlobProperty):
     def __init__(self, name=None, indexed=False, **kwargs):
@@ -152,6 +159,7 @@ class TextProperty(BlobProperty):
 
         return value
 
+
 class StringProperty(TextProperty):
     def __init__(self, name=None, indexed=True, **kwargs):
         super(StringProperty, self).__init__(name=name, indexed=indexed, **kwargs)
@@ -166,6 +174,7 @@ class PickleProperty(BlobProperty):
 
     def _validate(self, value):
         return value
+
 
 class JsonProperty(BlobProperty):
     def __init__(self, name=None, schema=None, **kwargs):
@@ -218,6 +227,7 @@ class DateProperty(DateTimeProperty):
 
     def _now(self):
         return datetime.datetime.utcnow().date()
+
 
 class TimeProperty(DateTimeProperty):
     def _validate(self, value):
